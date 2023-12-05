@@ -1,66 +1,130 @@
-#include "user.h"
-#include <stdio.h>
-#include <string.h>
+#include "library_system.h"
 
-void deleteUser(struct User users[], int *userCount) {
-    if (*userCount > 0) {
-        int userId;
-        printf("Enter the ID of the user to delete: ");
-        scanf("%d", &userId);
+void userAuthentication() {
+    char username[50];
+    char password[50];
 
-        int index = -1;
-        int i;
-        for (i = 0; i < *userCount; i++) {
-            if (users[i].id == userId) {
-                index = i;
-                break;
+    printf("Enter username: ");
+    scanf("%s", username);
+    printf("Enter password: ");
+    scanf("%s", password);
+
+    int found = 0;
+    int i;
+    for ( i = 0; i < userCount; i++) {
+        if (strcmp(username, users[i].username) == 0 && strcmp(password, users[i].password) == 0) {
+            found = 1;
+            printf("User login successful!\n");
+
+            int userChoice;
+            while (1) {
+                printf("\nUser Menu\n");
+                printf("1. Search Book\n");
+                printf("2. Display Books\n");
+                 printf("3. Search Author\n");
+                  printf("4. Rent Book\n");
+                  printf("5. Return Book\n");
+                  printf("6. Display Checked Book \n");
+                printf("7. Logout\n");
+                printf("Enter your choice: ");
+                scanf("%d", &userChoice);
+
+                switch (userChoice) {
+                    case 1:
+                        searchBook();
+                        break;
+                    case 2:
+                        displayBooks();
+                        break;
+                         case 3:
+                        rentBook();
+                        break;
+                         case 4:
+                       returnBook();
+                        break;
+                         case 5:
+                        displayBooks();
+                        break;
+                           case 6:
+                       displayCheckedOutBooks();
+                        break;
+                    case 7:
+                        printf("User logout successful!\n");
+                        return;
+                    default:
+                        printf("Invalid choice. Please try again.\n");
+                }
             }
         }
+    }
 
-        if (index != -1) {
-            // Shift the array to remove the user
-            for (i = index; i < *userCount - 1; i++) {
-                users[i] = users[i + 1];
-            }
-            (*userCount)--;
-            printf("User deleted successfully.\n");
-        } else {
-            printf("User not found with ID %d.\n", userId);
-        }
-    } else {
-        printf("No users available to delete.\n");
+    if (!found) {
+        printf("Invalid credentials. Access denied.\n");
     }
 }
 
-void searchUser(const struct User users[], int userCount) {
-    if (userCount > 0) {
-        char searchUsername[100];
-        printf("Enter the username to search: ");
-        scanf(" %[^\n]", searchUsername);
+void rentBook() {
+    int bookID;
+    printf("Enter book ID to rent: ");
+    scanf("%d", &bookID);
 
-        int i;
-        for (i = 0; i < userCount; i++) {
-            if (strcmp(users[i].username, searchUsername) == 0) {
-                printf("User found with ID %d.\n", users[i].id);
-                return;
+    int found = 0;
+    int i;
+    for (i = 0; i < bookCount; i++) {
+        if (books[i].bookID == bookID) {
+            found = 1;
+            if (books[i].available) {
+                books[i].available = 0;  // Book is checked out
+                printf("Book rented successfully!\n");
+            } else {
+                printf("Book is not available for rent.\n");
             }
+            break;
         }
-        printf("User not found with username '%s'.\n", searchUsername);
-    } else {
-        printf("No users available to search.\n");
+    }
+
+    if (!found) {
+        printf("Book not found.\n");
     }
 }
-void addUser(struct User users[], int *userCount) {
-    if (*userCount < MAX_USERS) {
-        printf("Enter username: ");
-        scanf(" %[^\n]", users[*userCount].username);
-        printf("Enter password: ");
-        scanf(" %[^\n]", users[*userCount].password);
-        users[*userCount].id = *userCount + 1; // Assign a simple ID
-        (*userCount)++;
-        printf("User added successfully.\n");
-    } else {
-        printf("Maximum number of users reached. Cannot add more.\n");
+void returnBook() {
+    int bookID;
+    printf("Enter book ID to return: ");
+    scanf("%d", &bookID);
+
+    int found = 0;
+    int i;
+    for (i = 0; i < bookCount; i++) {
+        if (books[i].bookID == bookID) {
+            found = 1;
+            books[i].available = 1;  // Book is now available
+            printf("Book returned successfully!\n");
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Book not found.\n");
     }
 }
 
+
+void displayCheckedOutBooks() {
+    int i;
+    int found = 0;
+
+    for (i = 0; i < bookCount; i++) {
+        if (!books[i].available) {
+            found = 1;
+            printf("Book ID: %d\n", books[i].bookID);
+            printf("Title: %s\n", books[i].title);
+            printf("Author: %s\n", books[i].author);
+            // You can display additional book details if needed
+            printf("\n");
+        }
+    }
+
+    if (!found) {
+        printf("No books currently checked out.\n");
+    }
+}

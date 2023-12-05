@@ -1,27 +1,38 @@
-#include <stdio.h>
-#include "library.h"
+//#include <stdio.h>
+//#include <stdlib.h>
+//
+///* run this program using the console pauser or add your own getch, system("pause") or input loop */
+//
+//int main(int argc, char *argv[]) {
+//	return 0;
+//}
+#include "library_system.h"
+
+// Define the variables in one source file (main.c)
+struct User admin = {1, "admin", "admin123"};
+struct User users[100];
+struct Book books[100];
+int userCount = 0;
+int bookCount = 0;
 
 int main() {
+    int choice;
 
-  int choice;
-    struct Book books[MAX_BOOKS];
-    int bookCount = 0;
-    struct User users[MAX_USERS];
-    int userCount = 0;
-    while (true) {
-        printf("Library Management System\n");
-        printf("1. Admin\n");
-        printf("2. User\n");
+    while (1) {
+        printf("\nLibrary Management System\n");
+        printf("1. Admin Login\n");
+        printf("2. User Login\n");
         printf("3. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
         switch (choice) {
             case 1:
-                login();
+                adminAuthentication();
                 break;
             case 2:
-           userLogin(users, userCount, books, bookCount);
+                userAuthentication();
+                break;
             case 3:
                 printf("Exiting the program. Goodbye!\n");
                 return 0;
